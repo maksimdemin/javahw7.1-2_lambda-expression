@@ -2,23 +2,40 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Stream;
+
+import static java.lang.String.format;
 
 public class Main
 {
     private static String staffFile = "data/staff.txt";
     private static String dateFormat = "dd.MM.yyyy";
 
+
     public static void main(String[] args)
     {
         ArrayList<Employee> staff = loadStaffFromFile();
 
-//        staff.sort((o1, o2) -> o1.getName().compareTo(o2.getName())); // сортировка по алфавиту
-//        staff.sort((o1, o2) -> o1.getSalary().compareTo(o2.getSalary())); // сортировка по ЗП
+        //======================== ДЗ 7.1 ====================================
+//        staff.sort((o1, o2) -> o1.getSalary().equals(o2.getSalary()) ?
+//                        o1.getName().compareTo(o2.getName()) :
+//                        o1.getSalary().compareTo(o2.getSalary())); // сортировка по ЗП и алфавиту с помощью лямбда выражений
 
-        staff.sort(Comparator.comparing(Employee::getSalary).thenComparing(Employee::getName)); // сортировка по ЗП и алфавиту
-        staff.forEach(System.out::println);
+//        staff.sort(Comparator.comparing(Employee::getSalary).thenComparing(Employee::getName)); // сортировка по ЗП и алфавиту
+
+
+        //======================== ДЗ 7.2 ====================================
+//        staff.stream().filter(e -> e.getWorkStart().getYear() == 117)
+//                .max(Comparator.comparing(Employee::getSalary))
+//                .ifPresent(System.out::println); // вывод максимальной ЗП тех, кто поступил на работу в 2017 году
+
+                staff.stream().filter(e -> e.getWorkStart().getYear() == 2017)
+                .max(Comparator.comparing(Employee::getSalary))
+                .ifPresent(System.out::println); // вывод максимальной ЗП тех, кто поступил на работу в 2017 году
+
     }
 
     private static ArrayList<Employee> loadStaffFromFile()
@@ -37,7 +54,8 @@ public class Main
                 staff.add(new Employee(
                     fragments[0],
                     Integer.parseInt(fragments[1]),
-                    (new SimpleDateFormat(dateFormat)).parse(fragments[2])
+                    LocalDate.parse(fragments[2], DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+//                (new SimpleDateFormat("dd.MM.yyyy")).parse(fragments[2])
                 ));
             }
         }
