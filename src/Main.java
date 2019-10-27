@@ -3,6 +3,8 @@ import java.nio.file.Paths;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Stream;
@@ -19,6 +21,7 @@ public class Main
     {
         ArrayList<Employee> staff = loadStaffFromFile();
 
+
         //======================== ДЗ 7.1 ====================================
 //        staff.sort((o1, o2) -> o1.getSalary().equals(o2.getSalary()) ?
 //                        o1.getName().compareTo(o2.getName()) :
@@ -30,12 +33,11 @@ public class Main
         //======================== ДЗ 7.2 ====================================
 //        staff.stream().filter(e -> e.getWorkStart().getYear() == 117)
 //                .max(Comparator.comparing(Employee::getSalary))
-//                .ifPresent(System.out::println); // вывод максимальной ЗП тех, кто поступил на работу в 2017 году
+//                .ifPresent(System.out::println); // вывод максимальной ЗП тех, кто поступил на работу в 2017 году (используется метод deprecated getYear)
 
-                staff.stream().filter(e -> e.getWorkStart().getYear() == 2017)
+                staff.stream().filter(e -> convertDateToLocalDate(e.getWorkStart()).getYear() == 2017)
                 .max(Comparator.comparing(Employee::getSalary))
                 .ifPresent(System.out::println); // вывод максимальной ЗП тех, кто поступил на работу в 2017 году
-
     }
 
     private static ArrayList<Employee> loadStaffFromFile()
@@ -54,8 +56,8 @@ public class Main
                 staff.add(new Employee(
                     fragments[0],
                     Integer.parseInt(fragments[1]),
-                    LocalDate.parse(fragments[2], DateTimeFormatter.ofPattern("dd.MM.yyyy"))
-//                (new SimpleDateFormat("dd.MM.yyyy")).parse(fragments[2])
+//                    LocalDate.parse(fragments[2], DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                (new SimpleDateFormat("dd.MM.yyyy")).parse(fragments[2])
                 ));
             }
         }
@@ -64,4 +66,9 @@ public class Main
         }
         return staff;
     }
+
+    private static LocalDate convertDateToLocalDate(Date date) { // конвертация Date to LocalDate
+        return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+    }
+
 }
